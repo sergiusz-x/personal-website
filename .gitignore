@@ -1,0 +1,14 @@
+node_modules
+package-lock.json
+certs/*
+*logs/*
+*.log
+.env
+.env.local
+.env.production
+todo
+/backend/dist
+todo.md
+*.next
+frontend/package-lock.json
+/backend/src/certs/*

@@ -1,0 +1,68 @@
+{
+    "test": "PL",
+    "contact": {
+        "title": "KONTAKT",
+        "description": "Możesz skontaktować się ze mną przez email lub za pomocą formularza poniżej.",
+        "namePlaceholder": "Imię",
+        "emailPlaceholder": "E-mail",
+        "messagePlaceholder": "Wiadomość",
+        "submitButton": "Wyślij",
+        "successMessage": "Pomyślnie wysłano wiadomość!",
+        "errorMessage": "Błąd podczas przesyłania wiadomości!",
+        "captchaTitle": "Weryfikacja CAPTCHA",
+        "errors": {
+            "nameRequired": "Pole Imię jest wymagane.",
+            "emailRequired": "Pole E-mail jest wymagane.",
+            "invalidEmail": "Podaj poprawny adres e-mail.",
+            "messageRequired": "Pole Wiadomość jest wymagane."
+        },
+        "email": "kontakt@sergiusz.dev"
+    },
+    "header": {
+        "about": "O MNIE",
+        "tech-stack": "TECH STACK",
+        "projects": "PROJEKTY",
+        "contact": "KONTAKT",
+        "switchLang": {
+            "en": "ENG",
+            "pl": "PL"
+        }
+    },
+    "hero": {
+        "greeting": "Cześć, jestem Sergiusz",
+        "texts": [
+            "Specjalizuje się w aplikacjach Node.js",
+            "Tworzę boty na Discorda",
+            "Rozwijam aplikacje oparte na mikroserwisach",
+            "Automatyzuję procesy",
+            "Programuje",
+            "Tworzę nowoczesne aplikacje webowe",
+            "Łączę pasję z praktycznym działaniem"
+        ],
+        "projectsButton": "Sprawdź moje projekty",
+        "socialsButton": "Moje social media"
+    },
+    "projects": {
+        "title": "PROJEKTY",
+        "subtext": "Kliknij na projekt, aby poznać więcej szczegółów",
+        "githubButton": "Przejdź do GitHub",
+        "livePreviewButton": "Zobacz na żywo",
+        "livePreviewAvailable": "Podgląd na żywo dostępny",
+        "noProjectsMessage": "Nie udało się wczytać projektów, ale możesz je zobaczyć na moim GitHubie:"
+    },
+    "about": {
+        "title": "O MNIE",
+        "description": "Lubię tworzyć rzeczy, które rozwiązują konkretne problemy – od automatyzacji i botów po pełnoprawne aplikacje full stack.\n\nOd lat rozwijam się jako samouk-programista i freelancer, realizując projekty dopasowane do realnych potrzeb klientów. Cenię kreatywność, samodzielność i praktyczne podejście.\n\nPoza pracą lubię majsterkować, zajmować się autem i łapać oddech w górach.\n\nJestem otwarty na nowe wyzwania i współpracę."
+    },
+    "techStack": {
+        "title": "TECH STACK"
+    },
+    "ui": {
+        "loadingProjects": "Ładowanie projektów...",
+        "switchToPolish": "Przełącz na polski",
+        "switchToEnglish": "Przełącz na angielski",
+        "polishFlag": "PL",
+        "englishFlag": "ENG",
+        "toggleMenu": "Przełącz menu"
+    }
+}

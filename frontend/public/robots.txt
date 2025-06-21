@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Block access to API routes and internal paths
+Disallow: /api/
+Disallow: /_next/
+Disallow: /static/
+
+# Sitemap location
+Sitemap: https://sergiusz.dev/sitemap.xml

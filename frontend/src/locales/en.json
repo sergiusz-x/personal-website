@@ -1,0 +1,68 @@
+{
+    "test": "EN",
+    "contact": {
+        "title": "CONTACT",
+        "description": "You can contact me via email or using the form below.",
+        "namePlaceholder": "Name",
+        "emailPlaceholder": "Email",
+        "messagePlaceholder": "Message",
+        "submitButton": "Send",
+        "successMessage": "Message sent successfully!",
+        "errorMessage": "Error sending message!",
+        "captchaTitle": "CAPTCHA Verification",
+        "errors": {
+            "nameRequired": "Name is required.",
+            "emailRequired": "Email is required.",
+            "invalidEmail": "Please enter a valid email address.",
+            "messageRequired": "Message is required."
+        },
+        "email": "contact@sergiusz.dev"
+    },
+    "header": {
+        "about": "ABOUT",
+        "tech-stack": "TECH STACK",
+        "projects": "PROJECTS",
+        "contact": "CONTACT",
+        "switchLang": {
+            "en": "ENG",
+            "pl": "PL"
+        }
+    },
+    "hero": {
+        "greeting": "Hi, I'm Sergiusz",
+        "texts": [
+            "I specialize in Node.js applications",
+            "I create Discord bots",
+            "I develop microservices-based applications",
+            "I automate processes",
+            "I code",
+            "I build modern web applications",
+            "I combine passion with practical action."
+        ],
+        "projectsButton": "Check my projects",
+        "socialsButton": "My socials"
+    },
+    "projects": {
+        "title": "PROJECTS",
+        "subtext": "Click on a project to learn more",
+        "githubButton": "Go to GitHub",
+        "livePreviewButton": "Live Preview",
+        "livePreviewAvailable": "Live preview available",
+        "noProjectsMessage": "Failed to load projects, but you can view them on my GitHub:"
+    },
+    "about": {
+        "title": "ABOUT ME",
+        "description": "I enjoy building solutions that tackle real-world problems—from automations and bots to full-fledged full-stack applications.\n\nFor years I've grown as a self-taught developer and freelancer, delivering projects tailored to clients' actual needs. I value creativity, autonomy, and a hands-on, practical approach.\n\nOutside of work, I like to tinker, work on my car, and catch my breath in the mountains.\n\nI'm open to new challenges and collaborations."
+    },
+    "techStack": {
+        "title": "TECH STACK"
+    },
+    "ui": {
+        "loadingProjects": "Loading projects...",
+        "switchToPolish": "Switch to Polish",
+        "switchToEnglish": "Switch to English",
+        "polishFlag": "PL",
+        "englishFlag": "ENG",
+        "toggleMenu": "Toggle menu"
+    }
+}
