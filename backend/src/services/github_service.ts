@@ -22,13 +22,15 @@ const PinnedReposResponseSchema = z.object({
         user: z.object({
             pinnedItems: z.object({
                 edges: z.array(
-                    z.object({
-                        node: z.object({
-                            name: z.string(),
-                            description: z.string().nullable(),
-                            url: z.string()
+                    z
+                        .object({
+                            node: z.object({
+                                name: z.string(),
+                                description: z.string().nullable(),
+                                url: z.string()
+                            })
                         })
-                    })
+                        .nullable()
                 )
             })
         })
@@ -74,19 +76,21 @@ async function get_pinned_repos(): Promise<Repository[]> {
             return []
         }
 
-        const repos = validationResult.data.data.user.pinnedItems.edges.map(edge => ({
-            name: edge.node.name,
-            description: edge.node.description || "-",
-            url: edge.node.url,
-            readme: "", // Placeholder for README content
-            images_url: [] as string[],
-            live_preview_url: ""
-        }))
+        const repos = validationResult.data.data.user.pinnedItems.edges
+            .filter((edge): edge is { node: { name: string; description: string | null; url: string } } => edge !== null)
+            .map(edge => ({
+                name: edge.node.name,
+                description: edge.node.description || "-",
+                url: edge.node.url,
+                readme: "", // Placeholder for README content
+                images_url: [] as string[],
+                live_preview_url: ""
+            }))
 
         logger.info("Successfully fetched pinned repositories from GitHub")
         return Promise.all(
             repos.map(async repo => {
-                repo.readme = await get_repo_readme(repo.name)
+                repo.readme = await get_repo_readme(repo)
                 repo = replace_readme_image_urls(repo)
                 return repo
             })
@@ -98,16 +102,39 @@ async function get_pinned_repos(): Promise<Repository[]> {
     }
 }
 //
-async function get_repo_readme(name: string) {
+function get_owner_and_repo(repo_url: string) {
     try {
-        const response = await axios.get(`${github_api_baseurl}/repos/${process.env.GITHUB_USERNAME}/${name}/readme`, {
-            headers: {
-                Authorization: `Bearer ${process.env.GITHUB_API_TOKEN}`,
-                Accept: "application/vnd.github.v3.raw"
+        const parsed = new URL(repo_url)
+        const parts = parsed.pathname.split("/").filter(Boolean)
+        if (parts.length >= 2) {
+            return { owner: parts[0], name: parts[1] }
+        }
+    } catch (error) {
+        logger.warn(`Unable to parse repo URL: ${repo_url}`)
+    }
+    return null
+}
+//
+async function get_repo_readme(repo: Repository) {
+    const parsed = get_owner_and_repo(repo.url)
+    const owner = parsed?.owner || process.env.GITHUB_USERNAME
+    const name = parsed?.name || repo.name
+    try {
+        const response = await axios.get(
+            `${github_api_baseurl}/repos/${owner}/${name}/readme`,
+            {
+                headers: {
+                    Authorization: `Bearer ${process.env.GITHUB_API_TOKEN}`,
+                    Accept: "application/vnd.github.v3.raw"
+                }
             }
-        })
+        )
         return response.data
     } catch (error) {
+        if (axios.isAxiosError(error) && error.response?.status === 404) {
+            logger.warn(`README not found for ${name} (404)`)
+            return "README not found"
+        }
         logger.error(`Error fetching README for ${name}:`, error)
         return "README not found"
     }
@@ -174,7 +201,10 @@ async function update_repos() {
     const pinned_repos = await get_pinned_repos()
     //
     if (pinned_repos.length == 0) {
-        throw new Error("No repositories found")
+        logger.warn("No pinned repositories found or API error occurred. Keeping previous data if available.")
+        if (repositories.length > 0) return // Keep old data if new fetch failed
+        // Don't throw logic - allow starting with empty array to prevent crash
+        return
     }
     //
     repositories = pinned_repos
