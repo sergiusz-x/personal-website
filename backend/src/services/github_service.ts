@@ -12,6 +12,7 @@ interface Repository {
     name: string
     description: string
     url: string
+    homepage_url: string
     readme: string
     images_url: string[]
     live_preview_url: string
@@ -27,7 +28,8 @@ const PinnedReposResponseSchema = z.object({
                             node: z.object({
                                 name: z.string(),
                                 description: z.string().nullable(),
-                                url: z.string()
+                                url: z.string(),
+                                homepageUrl: z.string().nullable()
                             })
                         })
                         .nullable()
@@ -48,6 +50,7 @@ async function get_pinned_repos(): Promise<Repository[]> {
                                 name
                                 description
                                 url
+                                homepageUrl
                             }
                         }
                     }
@@ -77,11 +80,15 @@ async function get_pinned_repos(): Promise<Repository[]> {
         }
 
         const repos = validationResult.data.data.user.pinnedItems.edges
-            .filter((edge): edge is { node: { name: string; description: string | null; url: string } } => edge !== null)
+            .filter(
+                (edge): edge is { node: { name: string; description: string | null; url: string; homepageUrl: string | null } } =>
+                    edge !== null
+            )
             .map(edge => ({
                 name: edge.node.name,
                 description: edge.node.description || "-",
                 url: edge.node.url,
+                homepage_url: edge.node.homepageUrl || "",
                 readme: "", // Placeholder for README content
                 images_url: [] as string[],
                 live_preview_url: ""
@@ -142,31 +149,7 @@ async function get_repo_readme(repo: Repository) {
 //
 function replace_readme_image_urls(repo: Repository) {
     let all_image_urls: string[] = []
-    let live_preview_url = "" // Search for preview links - multiple patterns to catch different formats
-    const previewPatterns = [
-        // Pattern 1: [text](https://preview.sergiusz.dev/...)
-        /\[([^\]]*)\]\((https?:\/\/preview\.sergiusz\.dev\/[^)]+)\)/gi,
-        // Pattern 2: [preview.sergiusz.dev/...](https://preview.sergiusz.dev/...)
-        /\[preview\.sergiusz\.dev\/[^\]]+\]\((https?:\/\/preview\.sergiusz\.dev\/[^)]+)\)/gi,
-        // Pattern 3: Any link containing preview.sergiusz.dev
-        /\[[^\]]*\]\((https?:\/\/preview\.sergiusz\.dev\/[^)]+)\)/gi
-    ]
-
-    let previewMatch = null
-    for (const pattern of previewPatterns) {
-        previewMatch = repo.readme.match(pattern)
-        if (previewMatch && previewMatch.length > 0) {
-            break
-        }
-    }
-
-    if (previewMatch && previewMatch.length > 0) {
-        // Extract the URL from the first match using more flexible regex
-        const urlMatch = previewMatch[0].match(/\((https?:\/\/preview\.sergiusz\.dev\/[^)]+)\)/)
-        if (urlMatch) {
-            live_preview_url = urlMatch[1]
-        }
-    }
+    const live_preview_url = extract_live_preview_url(repo.readme) || repo.homepage_url || ""
 
     // Replace Markdown image URLs
     repo.readme = repo.readme.replace(/(!\[.*?\]\()(.+?)(\))/g, (match, p1, p2, p3) => {
@@ -194,6 +177,41 @@ function replace_readme_image_urls(repo: Repository) {
     repo.images_url = all_image_urls
     repo.live_preview_url = live_preview_url
     return repo
+}
+
+function extract_live_preview_url(readme: string) {
+    const linkRegex = /\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/gi
+    const liveKeywordRegex = /\b(live\s*demo|demo|preview|website|app|site)\b/i
+
+    let match: RegExpExecArray | null
+    while ((match = linkRegex.exec(readme)) !== null) {
+        const linkText = match[1]
+        const url = match[2]
+
+        if (liveKeywordRegex.test(linkText) && is_valid_live_preview_url(url)) {
+            return url
+        }
+    }
+
+    const inlineDemoRegex = /(?:^|\n)[^\n]*(?:live\s*demo|demo|preview)[^\n]*?(https?:\/\/[^\s)\]]+)/gi
+    while ((match = inlineDemoRegex.exec(readme)) !== null) {
+        const url = match[1]
+        if (is_valid_live_preview_url(url)) {
+            return url
+        }
+    }
+
+    return ""
+}
+
+function is_valid_live_preview_url(url: string) {
+    try {
+        const parsed = new URL(url)
+        const blockedHosts = new Set(["github.com", "www.github.com", "raw.githubusercontent.com", "gist.github.com"])
+        return (parsed.protocol === "http:" || parsed.protocol === "https:") && !blockedHosts.has(parsed.hostname)
+    } catch {
+        return false
+    }
 }
 //
 let repositories: Repository[] = []
